@@ -22,27 +22,23 @@ import BRAMFIFO::*;
 
 
 // REPL * 8
-#define MEMWORD 64
+#define MEMWORD 128
 
-//REPLPADD * 8
-#define MEMWORD2 192
-
-// REPL + 8
+// REP + 8
 #define REPLPADD 24
  
 interface Merge;
-        method Action put(Vector#(REPLPADD, DataType) datas);
+        method Action put(Vector#(REPL, DataType) datas);
         method ActionValue#(Vector#(REPL, Vector#(8,Bit#(BWIDTH7)))) get;
-	method Action configure(UInt#(4) a, Bit#(8) m, UInt#(12) wx);	
+	method Action configure(UInt#(4) a, Bit#(8) m, UInt#(6) wx);	
 endinterface
 
 (*synthesize*)
 module mkMerge(Merge);
 Reg#(UInt#(4))  kernel   <- mkReg(0);
 Reg#(Bit#(8))   mx       <- mkReg(0);
-Reg#(UInt#(12))  cx       <- mkReg(0);
-Reg#(UInt#(12))  cx2      <- mkReg(0);
-Reg#(UInt#(12))  width    <- mkReg(16);
+Reg#(UInt#(6)) cx        <- mkReg(0);
+Reg#(UInt#(6)) width     <- mkReg(16);
 
 Reg#(Bit#(BWIDTH0))  _L1[REPLPADD];
 Reg#(Bit#(BWIDTH1))  _L2[REPLPADD];
@@ -80,9 +76,7 @@ FIFOF#(Bit#(1)) p6 <- mkPipelineFIFOF;
 FIFOF#(Bit#(1)) p7 <- mkPipelineFIFOF;
 FIFOF#(Bit#(1)) p8 <- mkPipelineFIFOF;
 
-FIFOF#(Bit#(MEMWORD2)) mem <- mkSizedBRAMFIFOF(2048);
-FIFOF#(Bit#(MEMWORD2)) inQ <- mkFIFOF;
-Reg#(Bit#(MEMWORD2))  _L0  <- mkReg(0);
+FIFOF#(DataType) mem <- mkSizedBRAMFIFOF(MEMWORD);
 	//###########################################################
 
 
@@ -154,10 +148,8 @@ Reg#(Bit#(MEMWORD2))  _L0  <- mkReg(0);
 	end	
 	//################################################
 	
-    	rule _activate1 (cx2 >= width);
+    	rule _activate1;
 		p0.deq;
-		Bit#(MEMWORD2) d = (_L0 >> MEMWORD);
-		mem.enq(d);
 		p1.enq(1);
     	endrule
 
@@ -193,24 +185,6 @@ Reg#(Bit#(MEMWORD2))  _L0  <- mkReg(0);
 	//################################################
 	
 
-	rule lateralLoad (cx2 >= width);
-			let d1 = mem.first; mem.deq;
-			let d2 = inQ.first; inQ.deq;
-			let d3 = d1 | d2;
-			Vector#(REPLPADD, DataType) datas = unpack(d3);
-			for(int i = 0; i <REPLPADD; i = i + 1)
-				_L1[i] <= pack(datas[i]);
-
-			p0.enq(1);	
-	endrule
-
-	rule initialLoad (cx2 < width);
-			let d = inQ.first; inQ.deq;
-			mem.enq(d);
-			cx2 <= cx2 + 1;
-	endrule
-	
-	
 	rule coalesce;
 		p7.deq;
 		for(int i=0;i<REPLPADD; i = i + 1) begin
@@ -227,12 +201,10 @@ Reg#(Bit#(MEMWORD2))  _L0  <- mkReg(0);
                         cx <= cx + 1;
 	endrule
 		
-        method Action put(Vector#(REPLPADD, DataType) datas);
-		//for(int i=0;i<REPLPADD; i = i + 1)
-		//	$write("%d ", datas[i]);
-
-		//$display(" ##################################################### ");
-		inQ.enq(pack(datas));
+        method Action put(Vector#(REPL, DataType) datas);
+		for(int i = 0; i <REPL; i = i + 1)
+			_L1[i] <= pack(datas[i]);	
+		p0.enq(1);
 	endmethod
 	
         method ActionValue#(Vector#(REPL, Vector#(8,Bit#(BWIDTH7)))) get;
@@ -244,7 +216,7 @@ Reg#(Bit#(MEMWORD2))  _L0  <- mkReg(0);
 		return out;
 	endmethod
 	
-	method Action configure(UInt#(4) a, Bit#(8) m, UInt#(12) wx);	
+	method Action configure(UInt#(4) a, Bit#(8) m, UInt#(6) wx);	
 			kernel  <= a;
 			mx 	<= m;
 			width   <= wx;
