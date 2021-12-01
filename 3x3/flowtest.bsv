@@ -8,39 +8,61 @@ import datatypes::*;
 import merger::*;
 
 #define REPL 16
+#define IMG  16
 #define KERNL 3
+
+// REPL + 2
+#define REPLPADD 18
 
 (*synthesize*)
 module mkFlowTest();
 	Merge px 		<- mkMerge;
 	Reg#(Bool) init 	<- mkReg(False);	
+	Reg#(Bool) inL 		<- mkReg(True);	
 	Reg#(UInt#(8)) value 	<- mkReg(1);
 	Reg#(int) count		<- mkReg(0);	
+	
 	rule configure(init == False);
 		Bit#(8) mx = 0;
 		mx[0] = 1;
 		mx[1] = 1;
-		mx[2] = 1;
-		mx[3] = 1;
 		px.configure(KERNL,mx,16);
 		init <= True;
 	endrule
 
-	rule send(init == True);
-		Vector#(REPL,DataType) d = newVector;
-		for(UInt#(8) i=0 ;i< REPL;i=i+1)
+	rule intialLoad (init == True && inL == True);
+		Vector#(REPLPADD,DataType) d = replicate(0);
+		for(UInt#(8) i=0 ;i < KERNL-1;i=i+1)
 			d[i] = ((i+1)*value);
-		if (value == REPL)
+				
+		if (value == IMG) begin
 			value <= 1;
+			inL   <= False;
+		end
 		else
 			value <= value + 1;
 		px.put(d);
 	endrule
 
+	rule lateralLoad (init == True && inL == False);
+		Vector#(REPLPADD,DataType) d = replicate(0);
+		for(UInt#(8) i=0 ;i< REPLPADD-(KERNL-1);i=i+1)
+			d[i+(KERNL-1)] = ((i+KERNL)*(value));
+		
+		if (value == IMG) begin
+			value <= 1;
+			inL <= True;
+		end
+		else
+			value <= value + 1;
+		px.put(d);
+	endrule
+	
+
 	rule receive;
 		let d <- px.get;					
-									//for(int i=0;i<REPL; i = i + 1) begin
-									Vector#(3,Vector#(3,DataType)) x = unpack(pack(d[0]));
+									for(int i=0;i<REPL-2; i = i + 1) begin
+									Vector#(3,Vector#(3,DataType)) x = unpack(pack(d[i]));
 									for (int j=0;j<KERNL; j = j + 1) begin
 										for (int k=0;k<KERNL; k = k + 1) begin
 											$write("%d",x[j][k]);
@@ -48,10 +70,10 @@ module mkFlowTest();
 									end
 									end
 									$display();
-									//end
-		//$display("---------------------------------------------------------------------");
+									end
+		$display("---------------------------------------------------------------------");
 		count <= count + 1;
-		if (count == 30)
+		if (count == 13)
 			$finish(0);
 	endrule
 

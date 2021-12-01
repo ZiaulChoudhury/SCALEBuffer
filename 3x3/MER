@@ -6,9 +6,8 @@ import datatypes::*;
 import SpecialFIFOs:: * ;
 import Real::*;
 import Vector::*;
-import BRAMFIFO::*;
 
-#define REPL 128
+#define REPL 16
 
 
 #define BWIDTH0 8
@@ -19,28 +18,28 @@ import BRAMFIFO::*;
 
 
 // REPLPADD * 8
-#define MEMWORD 1024
+#define MEMWORD 64
 
 //REPLPADDPADD * 8
-#define MEMWORD2 1040
+#define MEMWORD2 144
 
 // REPLPADD + 2
-#define REPLPADD 130
+#define REPLPADD 18
 
 
 interface Merge;
         method Action put(Vector#(REPLPADD, DataType) datas);
         method ActionValue#(Vector#(REPL, Vector#(3,Bit#(BWIDTH7)))) get;
-	method Action configure(UInt#(4) a, Bit#(8) m, UInt#(12) wx);	
+	method Action configure(UInt#(4) a, Bit#(8) m, UInt#(6) wx);	
 endinterface
 
 (*synthesize*)
 module mkMerge(Merge);
 Reg#(UInt#(4))  kernel   <- mkReg(0);
 Reg#(Bit#(8))   mx       <- mkReg(0);
-Reg#(UInt#(12))  cx       <- mkReg(0);
-Reg#(UInt#(12)) cx2      <- mkReg(0);
-Reg#(UInt#(12)) width     <- mkReg(16);
+Reg#(UInt#(6)) cx        <- mkReg(0);
+Reg#(UInt#(12))  cx2      <- mkReg(0);
+Reg#(UInt#(6)) width     <- mkReg(16);
 
 Reg#(Bit#(BWIDTH0))  _L1[REPLPADD];
 Reg#(Bit#(BWIDTH1))  _L2[REPLPADD];
@@ -107,8 +106,8 @@ Reg#(Bit#(MEMWORD2))  _L0  <- mkReg(0);
                         let d1 = mem.first; mem.deq;
                         let d2 = inQ.first; inQ.deq;
                         let d3 = d1 | d2;
-                        Vector#(REPLPADD, DataType) datas = unpack(d3);
-                        for(int i = 0; i <REPLPADD; i = i + 1)
+                        Vector#(REPLPADDPADD, DataType) datas = unpack(d3);
+                        for(int i = 0; i <REPLPADDPADD; i = i + 1)
                                 _L1[i] <= pack(datas[i]);
 
                         p0.enq(1);
@@ -138,7 +137,9 @@ Reg#(Bit#(MEMWORD2))  _L0  <- mkReg(0);
 	endrule
 		
         method Action put(Vector#(REPLPADD, DataType) datas);
-		inQ.enq(pack(datas));
+		for(int i = 0; i <REPLPADD; i = i + 1)
+			_L1[i] <= pack(datas[i]);	
+		p0.enq(1);
 	endmethod
 	
         method ActionValue#(Vector#(REPL, Vector#(3,Bit#(BWIDTH7)))) get;
@@ -150,7 +151,7 @@ Reg#(Bit#(MEMWORD2))  _L0  <- mkReg(0);
 		return out;
 	endmethod
 	
-	method Action configure(UInt#(4) a, Bit#(8) m, UInt#(12) wx);	
+	method Action configure(UInt#(4) a, Bit#(8) m, UInt#(6) wx);	
 			kernel  <= 3;
 			mx 	<= m;
 			width   <= wx;

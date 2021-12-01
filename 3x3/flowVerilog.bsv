@@ -12,7 +12,7 @@ import conv::*;
 interface STDIN;
         method ActionValue#(Bit#(32)) get;
         method Action put(Bit#(8) datas);
-	method Action configure(UInt#(4) a, Bit#(8) m, UInt#(6) wx, UInt#(19) wxx);	
+	method Action configure(UInt#(4) a, Bit#(8) m, UInt#(12) wx, UInt#(19) wxx);	
 endinterface
 
 (*synthesize*)
@@ -33,8 +33,8 @@ module mkFlowTest(STDIN);
 	FIFOF#(DataType) outQ <- mkFIFOF;
 		
 	rule send(init == True);
-		Vector#(128,DataType) d = newVector;
-		for(UInt#(8) i=0 ;i< 128;i=i+1)
+		Vector#(130,DataType) d = newVector;
+		for(UInt#(8) i=0 ;i< 130;i=i+1)
 			d[i] = (i*value + seed);
 		value <= value + 1;
 		px.put(d);
@@ -65,7 +65,7 @@ module mkFlowTest(STDIN);
 		fetch <= True;
 	endrule
 			
-	method Action configure(UInt#(4) a, Bit#(8) m, UInt#(6) wx, UInt#(19) wxx);	
+	method Action configure(UInt#(4) a, Bit#(8) m, UInt#(12) wx, UInt#(19) wxx);	
 		px.configure(a,m,wx);
 		init <= True;
 		index <= wxx;

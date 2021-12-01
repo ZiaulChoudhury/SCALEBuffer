@@ -228,10 +228,6 @@ Reg#(Bit#(MEMWORD2))  _L0  <- mkReg(0);
 	endrule
 		
         method Action put(Vector#(REPLPADD, DataType) datas);
-		//for(int i=0;i<REPLPADD; i = i + 1)
-		//	$write("%d ", datas[i]);
-
-		//$display(" ##################################################### ");
 		inQ.enq(pack(datas));
 	endmethod
 	
