@@ -8,7 +8,7 @@ import Real::*;
 import Vector::*;
 import BRAMFIFO::*;
 
-#define REPL 128
+#define REPL 16
 
 
 #define BWIDTH0 8
@@ -19,13 +19,13 @@ import BRAMFIFO::*;
 
 
 // REPLPADD * 8
-#define MEMWORD 1024
+#define MEMWORD 128
 
 //REPLPADDPADD * 8
-#define MEMWORD2 1040
+#define MEMWORD2 144
 
 // REPLPADD + 2
-#define REPLPADD 130
+#define REPLPADD 18
 
 
 interface Merge;

@@ -42,6 +42,9 @@ module mkFlowTest();
 		else
 			value <= value + 1;
 		px.put(d);
+		for(int i=0; i< REPLPADD; i = i + 1)
+			$write(" %d ", d[i]);
+		$display("--------------------------------------------------------");
 	endrule
 
 	rule lateralLoad (init == True && inL == False);
@@ -61,7 +64,7 @@ module mkFlowTest();
 
 	rule receive;
 		let d <- px.get;					
-									for(int i=0;i<REPL-2; i = i + 1) begin
+									/*for(int i=0;i<REPL-2; i = i + 1) begin
 									Vector#(3,Vector#(3,DataType)) x = unpack(pack(d[i]));
 									for (int j=0;j<KERNL; j = j + 1) begin
 										for (int k=0;k<KERNL; k = k + 1) begin
@@ -71,7 +74,7 @@ module mkFlowTest();
 									end
 									$display();
 									end
-		$display("---------------------------------------------------------------------");
+		$display("---------------------------------------------------------------------");*/
 		count <= count + 1;
 		if (count == 13)
 			$finish(0);
