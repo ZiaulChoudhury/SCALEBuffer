@@ -1,0 +1,265 @@
+=== Generated schedule for mkCoalesce ===
+
+Method schedule
+---------------
+Method: put
+Ready signal: inQ.i_notFull
+Conflict-free: get
+Conflicts: put
+ 
+Method: get
+Ready signal: p3_rv.port0__read[1]
+Conflict-free: put
+Conflicts: get
+ 
+Rule schedule
+-------------
+Rule: _Q1
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q2
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q3
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q1_1
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q2_1
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q3_1
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q1_2
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q2_2
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q3_2
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q1_3
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q2_3
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q3_3
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q1_4
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q2_4
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q3_4
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q1_5
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q2_5
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q3_5
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q1_6
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q2_6
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q3_6
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q1_7
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q2_7
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q3_7
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q1_8
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q2_8
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q3_8
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q1_9
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q2_9
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q3_9
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q1_10
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q2_10
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q3_10
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q1_11
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q2_11
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q3_11
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q1_12
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q2_12
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q3_12
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q1_13
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q2_13
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q3_13
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q1_14
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q2_14
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _Q3_14
+Predicate: True
+Blocking rules: (none)
+ 
+Rule: _activate1
+Predicate: inQ.i_notEmpty && (! p0_rv.port1__read[1])
+Blocking rules: (none)
+ 
+Rule: _activate2
+Predicate: p0_rv.port0__read[1] && (! p1_rv.port1__read[1])
+Blocking rules: (none)
+ 
+Rule: _activate3
+Predicate: p1_rv.port0__read[1] && (! p2_rv.port1__read[1])
+Blocking rules: (none)
+ 
+Rule: _activate4
+Predicate: p2_rv.port0__read[1] && (! p3_rv.port1__read[1])
+Blocking rules: (none)
+ 
+Logical execution order: put,
+			 get,
+			 _Q3,
+			 _Q3_1,
+			 _Q2,
+			 _Q3_2,
+			 _Q2_1,
+			 _Q1,
+			 _Q3_3,
+			 _Q2_2,
+			 _Q1_1,
+			 _Q3_4,
+			 _Q2_3,
+			 _Q1_2,
+			 _Q3_5,
+			 _Q2_4,
+			 _Q1_3,
+			 _Q3_6,
+			 _Q2_5,
+			 _Q1_4,
+			 _Q3_7,
+			 _Q2_6,
+			 _Q1_5,
+			 _Q3_8,
+			 _Q2_7,
+			 _Q1_6,
+			 _Q3_9,
+			 _Q2_8,
+			 _Q1_7,
+			 _Q3_10,
+			 _Q2_9,
+			 _Q1_8,
+			 _Q3_11,
+			 _Q2_10,
+			 _Q1_9,
+			 _Q3_12,
+			 _Q2_11,
+			 _Q1_10,
+			 _Q3_13,
+			 _Q2_12,
+			 _Q1_11,
+			 _Q1_14,
+			 _Q2_14,
+			 _Q1_13,
+			 _Q3_14,
+			 _Q2_13,
+			 _Q1_12,
+			 _activate4,
+			 _activate3,
+			 _activate2,
+			 _activate1
+
+==========================================
