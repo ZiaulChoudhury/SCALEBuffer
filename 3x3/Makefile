@@ -14,6 +14,7 @@ bluespec:
 	$(BSC)  -sim  -e mkComputeTree -o compute
 
 verilog:
+	$(BSC)  -verilog -u -cpp +RTS -K200M -RTS -parallel-sim-link 8 -steps-max-intervals 1600000 -no-warn-action-shadowing coalescer2.bsv
 	$(BSC)  -verilog -u -cpp +RTS -K200M -RTS -parallel-sim-link 8 -steps-max-intervals 1600000 -no-warn-action-shadowing bitonic.bsv
 	#$(BSC)  -verilog -o ver -e mkFlowTest *.v 
 
@@ -36,6 +37,10 @@ simulate:
 simulate2:
 	$(BSC)  -sim  -u -g mkFlowTest2 +RTS -K200M -RTS -show-schedule -steps-max-intervals 1600000 -parallel-sim-link 8 -no-warn-action-shadowing -cpp  flowtest2.bsv
 	$(BSC)  -sim  -e mkFlowTest2  +RTS -K200M -RTS -o sim2
+
+simulate3:
+	$(BSC)  -sim  -u -g mkFlowTest3 +RTS -K200M -RTS -show-schedule -steps-max-intervals 1600000 -parallel-sim-link 8 -no-warn-action-shadowing -cpp  flowtest3.bsv
+	$(BSC)  -sim  -e mkFlowTest3  +RTS -K200M -RTS -o sim2
 
 simulatex:
 	$(BSC)  -sim  -u -g mkFlexnnTest +RTS -K200M -RTS -show-schedule -steps-max-intervals 1600000 -no-warn-action-shadowing -cpp  FlexnnTest.bsv
