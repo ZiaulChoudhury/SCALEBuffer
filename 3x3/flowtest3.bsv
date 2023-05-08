@@ -7,7 +7,7 @@ import FIFOF:: *;
 import datatypes::*;
 import coalescer2::*;
 
-#define VLEN 64
+#define VLEN 32
 
 
 (*synthesize*)

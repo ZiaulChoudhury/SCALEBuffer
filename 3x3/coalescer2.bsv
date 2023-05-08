@@ -9,10 +9,10 @@ import Vector::*;
 import BRAMFIFO::*;
 
 
-#define VLEN 64
+#define VLEN 32
 
 // 8 x 8 x 8 
-#define BITWIDTH 512
+#define BITWIDTH 256
 
 interface Coalesce2;
         method Action put(Vector#(VLEN, DataType) datas);
