@@ -12,7 +12,6 @@ import BRAMFIFO::*;
 #define VLEN 8
 
 // 8 x 8 
-
 #define BITWIDTH 64
 
 interface Coalesce3;
@@ -46,30 +45,22 @@ FIFOF#(Vector#(VLEN,DataType)) inQ <- mkFIFOF;
 
 	//#################################################
 	rule _Q1;
-		p0.deq;
-		for(int i=0 ;i<VLEN; i = i + 1)
-			$write(" %d ", _L1[i]);
-		$display(" \n---------------- %d -------------- ", count);
-
 		for(int i=0;i<VLEN; i = i + 1)
-		_L2[i] <= _L1[i] | _L2[i];
-		count <= count + 1;
-		if(count == kernel-1)
-			p1.enq(1);
-		p2.enq(1);
+		_L2[i] <= (_L1[i]) | (_L2[i]<<8);
 	endrule
 	
-	rule _Q2;
-		p2.deq;
-		for(int i=0; i< VLEN; i = i + 1)
-		_L2[i] <= _L2[i] << 8;
-        endrule
-    	
 	rule _activate1;
 		let d =  inQ.first; inQ.deq;
 		for(int i=0; i<VLEN; i = i + 1)
 			_L1[i] <= zeroExtend(pack(d[i]));
 		p0.enq(1);
+	endrule
+	
+	rule _activate2;
+		p0.deq;
+		count <= count + 1;
+		if(count >= kernel-1)
+			p1.enq(1);	
 	endrule
 		
 	//################################################
