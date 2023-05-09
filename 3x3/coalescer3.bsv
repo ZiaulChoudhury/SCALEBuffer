@@ -12,6 +12,7 @@ import BRAMFIFO::*;
 #define VLEN 8
 
 // 8 x 8 
+
 #define BITWIDTH 64
 
 interface Coalesce3;
