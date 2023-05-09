@@ -32,10 +32,9 @@ module mkFlowTest3();
 
 	rule receive;
 		let d <- px.get;				
-		for(int i=0 ;i<3; i = i + 1) begin
-			Vector#(3,DataType) 	xx = unpack(truncate(d[i]));
-			for(int j = 0; j<3; j = j +1)
-				$write("%d", xx[j]);
+		for(int i=0 ;i<8; i = i + 1) begin
+			for(int j = 0; j<8; j = j +1)
+				$write("%d", d[i][j]);
 			$display();
 		end
 		$finish(0);
