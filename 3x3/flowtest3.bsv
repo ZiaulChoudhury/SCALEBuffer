@@ -5,14 +5,14 @@ import Vector:: *;
 import FIFO:: *;
 import FIFOF:: *;
 import datatypes::*;
-import coalescer2::*;
+import coalescer3::*;
 
-#define VLEN 32
+#define VLEN 8
 
 
 (*synthesize*)
 module mkFlowTest3();
-	Coalesce2  px 		<- mkCoalesce2;	
+	Coalesce3  px 		<- mkCoalesce3;	
 	Reg#(int) count 	<- mkReg(0);
 	Reg#(Bool) init		<- mkReg(False);
 	Reg#(UInt#(8)) 	value 	<- mkReg(1);
@@ -31,9 +31,13 @@ module mkFlowTest3();
 	endrule	
 
 	rule receive;
-		let d <- px.get;					
-		for(int i=0 ;i<9; i = i + 1)
-			$display("%d", d[i]);
+		let d <- px.get;				
+		for(int i=0 ;i<3; i = i + 1) begin
+			Vector#(3,DataType) 	xx = unpack(truncate(d[i]));
+			for(int j = 0; j<3; j = j +1)
+				$write("%d", xx[j]);
+			$display();
+		end
 		$finish(0);
 	endrule
 

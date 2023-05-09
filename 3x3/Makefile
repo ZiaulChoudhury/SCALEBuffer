@@ -15,6 +15,7 @@ bluespec:
 
 verilog:
 	$(BSC)  -verilog -u -cpp +RTS -K200M -RTS -parallel-sim-link 8 -steps-max-intervals 1600000 -no-warn-action-shadowing coalescer2.bsv
+	$(BSC)  -verilog -u -cpp +RTS -K200M -RTS -parallel-sim-link 8 -steps-max-intervals 1600000 -no-warn-action-shadowing coalescer3.bsv
 	$(BSC)  -verilog -u -cpp +RTS -K200M -RTS -parallel-sim-link 8 -steps-max-intervals 1600000 -no-warn-action-shadowing bitonic.bsv
 	#$(BSC)  -verilog -o ver -e mkFlowTest *.v 
 
