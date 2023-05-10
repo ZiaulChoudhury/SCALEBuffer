@@ -1,0 +1,19 @@
+=== Generated schedule for mkFlowTest3 ===
+
+Rule schedule
+-------------
+Rule: initialize
+Predicate: ! init
+Blocking rules: (none)
+ 
+Rule: put
+Predicate: px.RDY_put && init
+Blocking rules: (none)
+ 
+Rule: receive
+Predicate: px.RDY_get
+Blocking rules: (none)
+ 
+Logical execution order: put, receive, initialize
+
+===========================================
