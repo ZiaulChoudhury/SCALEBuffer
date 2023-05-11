@@ -7,8 +7,10 @@ import FIFOF:: *;
 import datatypes::*;
 import merger::*;
 
+import "BDPI" function Action fill_image();
+
 #define REPL 1
-#define IMG  16
+#define IMG  25
 #define KERNL 3
 
 // REPL + KERNEL - 1
@@ -29,14 +31,15 @@ module mkFlowTest();
 		mx[1] = 1;
 		//mx[2] = 1;
 		//mx[3] = 1;
-		px.configure(KERNL,mx,16);
+		px.configure(KERNL,mx,IMG);
+		fill_image();
 		init <= True;
 	endrule
 
 	rule intialLoad (init == True && inL == True);
 		Vector#(REPLPADD,DataType) d = replicate(0);
 		for(UInt#(8) i=0 ;i < KERNL-1;i=i+1)
-			d[i] = ((i+1)*value);
+			d[i] = ((i+1)*value)%255;
 				
 		if (value == IMG) begin
 			value <= 1;
@@ -52,8 +55,8 @@ module mkFlowTest();
 	rule lateralLoad (init == True && inL == False);
 		Vector#(REPLPADD,DataType) d = replicate(0);
 		for(UInt#(8) i=0 ;i< REPLPADD-(KERNL-1);i=i+1)
-			d[i+(KERNL-1)] = ((value2)*(value));
-		$display(" pushing %d ", (value2)*value);
+			d[i+(KERNL-1)] = ((value2)*(value))%255;
+		$display(" pushing %d ", ((value2)*value)%255 );
 	
 		if (value == IMG) begin
 			value <= 1;
@@ -90,7 +93,7 @@ module mkFlowTest();
 		$display("\n------------------------\n");	
 							
 		count <= count + 1;
-		if (count == 195)
+		if (count == 23*23-1)
 			$finish(0);
 	endrule
 

@@ -43,7 +43,7 @@ Reg#(UInt#(4))  kernel   <- mkReg(0);
 Reg#(Bit#(8))   mx       <- mkReg(0);
 Reg#(UInt#(12))  cx       <- mkReg(0);
 Reg#(UInt#(12))  cx2      <- mkReg(0);
-Reg#(UInt#(12))  width    <- mkReg(16);
+Reg#(UInt#(12))  width    <- mkReg(32);
 
 Reg#(Bit#(BWIDTH0))  _L1[REPLPADD];
 Reg#(Bit#(BWIDTH1))  _L2[REPLPADD];
