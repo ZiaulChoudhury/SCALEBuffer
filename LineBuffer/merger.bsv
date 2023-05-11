@@ -34,12 +34,12 @@ import coalescer::*;
 interface Merge;
         method Action put(Vector#(REPLPADD, DataType) datas);
         method ActionValue#(Vector#(8, Vector#(8, DataType))) get;
-	method Action configure(UInt#(4) a, Bit#(8) m, UInt#(12) wx);	
+	method Action configure(UInt#(6) a, Bit#(8) m, UInt#(12) wx);	
 endinterface
 
 (*synthesize*)
 module mkMerge(Merge);
-Reg#(UInt#(4))  kernel   <- mkReg(0);
+Reg#(UInt#(6))  kernel   <- mkReg(0);
 Reg#(Bit#(8))   mx       <- mkReg(0);
 Reg#(UInt#(12))  cx       <- mkReg(0);
 Reg#(UInt#(12))  cx2      <- mkReg(0);
@@ -53,7 +53,12 @@ Reg#(Bit#(BWIDTH4))  _L5[REPLPADD];
 Reg#(Bit#(BWIDTH5))  _L6[REPLPADD];
 Reg#(Bit#(BWIDTH6))  _L7[REPLPADD];
 Reg#(Bit#(BWIDTH7))  _L8[REPLPADD];
+Reg#(int) _clk 		<- mkReg(0);
 
+rule inCLK;
+	_clk <= _clk + 1;
+endrule
+	
 Coalesce coax <- mkCoalesce;
 
 for(int i=0;i<REPLPADD;i=i+1) begin
@@ -78,7 +83,7 @@ FIFOF#(Bit#(1)) p6 <- mkPipelineFIFOF;
 FIFOF#(Bit#(1)) p7 <- mkPipelineFIFOF;
 FIFOF#(Bit#(1)) p8 <- mkPipelineFIFOF;
 
-FIFOF#(Bit#(MEMWORD2)) mem <- mkSizedBRAMFIFOF(2048);
+FIFOF#(Bit#(MEMWORD2)) mem <- mkSizedBRAMFIFOF(100000);
 FIFOF#(Bit#(MEMWORD2)) inQ <- mkFIFOF;
 Reg#(Bit#(MEMWORD2))  _L0  <- mkReg(0);
 	//###########################################################
@@ -197,8 +202,8 @@ Reg#(Bit#(MEMWORD2))  _L0  <- mkReg(0);
 			let d2 = inQ.first; inQ.deq;
 			Vector#(REPLPADD, DataType) datas2 = unpack(d1);
 			Vector#(REPLPADD, DataType) datas3 = unpack(d2);
-			for(int i=0; i<REPLPADD; i = i + 1)
-			$display(" MEM = %d IN = %d ", datas2[i], datas3[i]); 	
+			//for(int i=0; i<REPLPADD; i = i + 1)
+			//$display(" MEM = %d IN = %d @CLK = %d ", datas2[i], datas3[i], _clk); 	
 			let d3 = d1 | d2;
 			_L0 <= d3;
 			Vector#(REPLPADD, DataType) datas = unpack(d3);
@@ -217,16 +222,12 @@ Reg#(Bit#(MEMWORD2))  _L0  <- mkReg(0);
 	
 	rule coalesce;
 		p7.deq;
-			Vector#(3,DataType) d = unpack(truncate(_L8[0]));
-			$write("[%d %d %d]", d[0], d[1], d[2]);
-			$display("\n------------------------- ");	
+			//Vector#(3,DataType) d = unpack(truncate(_L8[0]));
+			//$write("[%d %d %d]", d[0], d[1], d[2]);
+			//$display("\n------------------------- ");	
 
 		coax.put(unpack(zeroExtend(pack(_L8[0]))));	
 
-		if (cx == width-1)
-                        cx <= 0;
-                else
-                        cx <= cx + 1;
 	endrule
 		
         method Action put(Vector#(REPLPADD, DataType) datas);
@@ -238,7 +239,7 @@ Reg#(Bit#(MEMWORD2))  _L0  <- mkReg(0);
 		return out;
 	endmethod
 	
-	method Action configure(UInt#(4) a, Bit#(8) m, UInt#(12) wx);	
+	method Action configure(UInt#(6) a, Bit#(8) m, UInt#(12) wx);	
 			kernel  <= a;
 			mx 	<= m;
 			width   <= wx;

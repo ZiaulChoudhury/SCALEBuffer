@@ -16,7 +16,7 @@ import BRAMFIFO::*;
 
 interface Coalesce;
         method Action put(Vector#(VLEN, DataType) datas);
-	method Action configure(UInt#(4) ker);
+	method Action configure(UInt#(6) ker);
         method ActionValue#(Vector#(VLEN, Vector#(VLEN, DataType))) get;
 endinterface
 
@@ -27,7 +27,11 @@ Reg#(Bit#(BITWIDTH))  _L1[VLEN];
 Reg#(Bit#(BITWIDTH))  _L2[VLEN];
 Reg#(DataType)        window[VLEN][VLEN];
 Reg#(DataType)        window2[VLEN][VLEN];
+Reg#(int) _clk		<- mkReg(0);
 
+rule inCCLK;
+	_clk <= _clk + 1;
+endrule
 
 for(int i=0; i<VLEN; i = i + 1) begin
 	_L1[i] <- mkReg(0);
@@ -41,9 +45,9 @@ for(int i=0 ;i< VLEN; i = i + 1)
 		window2[i][j] <- mkReg(0);
 end
 
-Reg#(UInt#(10)) shift_amount <- mkReg(0);
-Reg#(UInt#(4)) kernel 	     <- mkReg(0);
-Reg#(UInt#(4)) count 	     <- mkReg(0);
+Reg#(UInt#(10)) cx           <- mkReg(0);
+Reg#(UInt#(6)) kernel 	     <- mkReg(0);
+Reg#(UInt#(6)) count 	     <- mkReg(0);
 
 FIFOF#(Bit#(1)) p0 <- mkPipelineFIFOF;
 FIFOF#(Bit#(1)) p1 <- mkPipelineFIFOF;
@@ -68,7 +72,14 @@ FIFOF#(Vector#(VLEN,DataType)) inQ <- mkFIFOF;
 	
 	rule _activate2;
 		p0.deq;
-		count <= count + 1;
+		if (cx == 18-1) begin
+                        cx <= 0;
+			count <= 0;
+		end
+                else begin
+                        cx <= cx + 1;
+			count <= count + 1;
+		end
 		if(count >= kernel-1)
 			p1.enq(1);	
 	endrule
@@ -77,9 +88,13 @@ FIFOF#(Vector#(VLEN,DataType)) inQ <- mkFIFOF;
 		p1.deq;
 		for(int i=0; i < VLEN; i = i + 1) begin
 			Vector#(VLEN, DataType) xx = unpack(_L2[i]);
-			for(int j = 0; j<VLEN; j = j + 1)
+			for(int j = 0; j<VLEN; j = j + 1) begin
+				//if(xx[j] != 0)
+				//$write(" %d ", xx[j]);
 				window[j][i] <= xx[j];
+			end
 		end
+		//$display(" @clk = %d ", _clk);
 		p2.enq(1);
 	endrule
 	
@@ -99,7 +114,7 @@ FIFOF#(Vector#(VLEN,DataType)) inQ <- mkFIFOF;
 		return x;
 	endmethod
 	
-	method Action configure(UInt#(4) ker);
+	method Action configure(UInt#(6) ker);
 		kernel <= ker;
 	endmethod	
 endmodule

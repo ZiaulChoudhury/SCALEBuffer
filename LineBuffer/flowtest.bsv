@@ -8,9 +8,11 @@ import datatypes::*;
 import merger::*;
 
 import "BDPI" function Action fill_image();
+import "BDPI" function  ActionValue#(Int#(32)) initial_load();
+import "BDPI" function  ActionValue#(Int#(32)) lateral_load();
 
 #define REPL 1
-#define IMG  25
+#define IMG  18
 #define KERNL 3
 
 // REPL + KERNEL - 1
@@ -38,12 +40,15 @@ module mkFlowTest();
 
 	rule intialLoad (init == True && inL == True);
 		Vector#(REPLPADD,DataType) d = replicate(0);
-		for(UInt#(8) i=0 ;i < KERNL-1;i=i+1)
-			d[i] = ((i+1)*value)%255;
+			Int#(32) v0 <- initial_load();
+			UInt#(8) v1 = unpack(truncate(pack(v0)));
+			Int#(32) v2 <- initial_load();
+			UInt#(8) v3 = unpack(truncate(pack(v2)));
+			//$display(" ----> %d %d ", v0,v2);
+			d[0] = v1;
+			d[1] = v3;
 				
 		if (value == IMG) begin
-			value <= 1;
-			value2 <= 3;
 			inL   <= False;
 		end
 		else
@@ -54,16 +59,11 @@ module mkFlowTest();
 
 	rule lateralLoad (init == True && inL == False);
 		Vector#(REPLPADD,DataType) d = replicate(0);
-		for(UInt#(8) i=0 ;i< REPLPADD-(KERNL-1);i=i+1)
-			d[i+(KERNL-1)] = ((value2)*(value))%255;
-		$display(" pushing %d ", ((value2)*value)%255 );
-	
-		if (value == IMG) begin
-			value <= 1;
-			value2 <= value2 + 1;
+		for(UInt#(8) i=0 ;i< REPLPADD-(KERNL-1);i=i+1) begin
+			Int#(32) v0 <- lateral_load();
+                        UInt#(8) v1 = unpack(truncate(pack(v0)));
+			d[i+(KERNL-1)] = v1;
 		end
-		else
-			value <= value + 1;
 		px.put(d);
 	endrule
 	
@@ -86,14 +86,14 @@ module mkFlowTest();
 			
 		for(int i=0;i<3;i=i+1) begin
 			for(int j=0;j<3;j=j+1)
-				$write("%4d", matrix[i][j]);
+				$write(" %d", matrix[i][j]);
 		$display();
 		end
 		
-		$display("\n------------------------\n");	
+		$display("------------------------");	
 							
 		count <= count + 1;
-		if (count == 23*23-1)
+		if (count == (IMG-2)*(IMG-2)-1)
 			$finish(0);
 	endrule
 
