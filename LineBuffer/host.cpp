@@ -1,8 +1,8 @@
 #include <stdio.h>
 
 #define IMG 16
-#define KERNEL 5
-#define REPL 2
+#define KERNEL 3
+#define REPL 3
 
 int row_counter;
 int col_counter;

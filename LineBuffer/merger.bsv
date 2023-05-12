@@ -9,7 +9,7 @@ import Vector::*;
 import BRAMFIFO::*;
 import coalescer::*;
 
-#define REPL 2
+#define REPL 3
 
 
 #define BWIDTH0 8
@@ -23,7 +23,7 @@ import coalescer::*;
 
 
 // REPL * 8
-#define MEMWORD 16
+#define MEMWORD 24
 
 //REPLPADD * 8
 #define MEMWORD2 64
@@ -35,6 +35,7 @@ interface Merge;
         method Action put(Vector#(REPLPADD, DataType) datas);
         method ActionValue#(Vector#(8, Vector#(8, DataType))) get_0;
         method ActionValue#(Vector#(8, Vector#(8, DataType))) get_1;
+        method ActionValue#(Vector#(8, Vector#(8, DataType))) get_2;
 	method Action configure(UInt#(6) a, Bit#(8) m, UInt#(12) wx);	
 endinterface
 
@@ -62,6 +63,7 @@ endrule
 	
 Coalesce coax_0 <- mkCoalesce;
 Coalesce coax_1 <- mkCoalesce;
+Coalesce coax_2 <- mkCoalesce;
 
 for(int i=0;i<REPLPADD;i=i+1) begin
 	_L1[i]   <- mkReg(0);
@@ -230,6 +232,7 @@ Reg#(Bit#(MEMWORD2))  _L0  <- mkReg(0);
 
 		coax_0.put(unpack(zeroExtend(pack(_L8[0]))));	
 		coax_1.put(unpack(zeroExtend(pack(_L8[1]))));	
+		coax_2.put(unpack(zeroExtend(pack(_L8[2]))));	
 
 	endrule
 		
@@ -246,6 +249,11 @@ Reg#(Bit#(MEMWORD2))  _L0  <- mkReg(0);
 		let out <- coax_1.get;
 		return out;
 	endmethod
+        
+	method ActionValue#(Vector#(8, Vector#(8, DataType))) get_2;
+		let out <- coax_2.get;
+		return out;
+	endmethod
 	
 	method Action configure(UInt#(6) a, Bit#(8) m, UInt#(12) wx);	
 			kernel  <= a;
@@ -253,6 +261,7 @@ Reg#(Bit#(MEMWORD2))  _L0  <- mkReg(0);
 			width   <= wx;
 			coax_0.configure(a,wx);
 			coax_1.configure(a,wx);
+			coax_2.configure(a,wx);
 	endmethod
 	
 endmodule

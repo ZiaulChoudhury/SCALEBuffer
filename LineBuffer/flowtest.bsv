@@ -11,9 +11,9 @@ import "BDPI" function Action fill_image();
 import "BDPI" function  ActionValue#(Int#(32)) initial_load();
 import "BDPI" function  ActionValue#(Int#(32)) lateral_load();
 
-#define REPL 2
+#define REPL 3
 #define IMG  16
-#define KERNL 5
+#define KERNL 3
 
 // REPL + KERNEL - 1
 #define REPLPADD 8
@@ -31,8 +31,8 @@ module mkFlowTest();
 		Bit#(8) mx = 0;
 		mx[0] = 1;
 		mx[1] = 1;
-		mx[2] = 1;
-		mx[3] = 1;
+		//mx[2] = 1;
+		//mx[3] = 1;
 		px.configure(KERNL,mx,IMG);
 		fill_image();
 		init <= True;
@@ -69,7 +69,8 @@ module mkFlowTest();
 
 	rule receive3 (KERNL == 3);
 		let d1 <- px.get_0;
-		let d <- px.get_1;
+		let d2 <- px.get_1;
+		let d  <- px.get_2;
 
 		Vector#(3,Vector#(3,DataType)) matrix = newVector;
 
