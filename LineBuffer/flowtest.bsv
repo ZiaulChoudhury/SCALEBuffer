@@ -13,7 +13,7 @@ import "BDPI" function  ActionValue#(Int#(32)) lateral_load();
 
 #define REPL 2
 #define IMG  16
-#define KERNL 3
+#define KERNL 5
 
 // REPL + KERNEL - 1
 #define REPLPADD 8
@@ -31,8 +31,8 @@ module mkFlowTest();
 		Bit#(8) mx = 0;
 		mx[0] = 1;
 		mx[1] = 1;
-		//mx[2] = 1;
-		//mx[3] = 1;
+		mx[2] = 1;
+		mx[3] = 1;
 		px.configure(KERNL,mx,IMG);
 		fill_image();
 		init <= True;
@@ -99,8 +99,8 @@ module mkFlowTest();
 
 
  	rule receive5 (KERNL == 5);
-                let d <- px.get_0;
-                let d1 <- px.get_1;
+                let d1 <- px.get_0;
+                let d <- px.get_1;
 
                 Vector#(5,Vector#(5,DataType)) matrix = newVector;
 
@@ -154,7 +154,7 @@ module mkFlowTest();
                 $display("------------------------");
 
                 count <= count + 1;
-                if (count == 10) //(IMG-4)*(IMG-4)-1) 
+                if (count == 30) //(IMG-4)*(IMG-4)-1) 
                         $finish(0);
         endrule
 

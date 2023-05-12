@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #define IMG 16
-#define KERNEL 3
+#define KERNEL 5
 #define REPL 2
 
 int row_counter;
@@ -73,12 +73,12 @@ void generate_windows()
 	}
 }
 
-/*int main()
+int main()
 {
 	fill_image();
         generate_windows();
-}*/
-int main()
+}
+/*int main()
 {
 	fill_image();
 	for(int i=0;i<16; i++) 
@@ -91,4 +91,4 @@ int main()
 	}
 	for(int i=0;i<64; i++)
 		lateral_load(); 
-}
+}*/
