@@ -26,10 +26,10 @@ import coalescer::*;
 #define MEMWORD 8
 
 //REPLPADD * 8
-#define MEMWORD2 24
+#define MEMWORD2 40
 
 // REPL + KERNEL - 1
-#define REPLPADD 3
+#define REPLPADD 5
  
 interface Merge;
         method Action put(Vector#(REPLPADD, DataType) datas);
@@ -243,7 +243,7 @@ Reg#(Bit#(MEMWORD2))  _L0  <- mkReg(0);
 			kernel  <= a;
 			mx 	<= m;
 			width   <= wx;
-			coax.configure(a);
+			coax.configure(a,wx);
 	endmethod
 	
 endmodule

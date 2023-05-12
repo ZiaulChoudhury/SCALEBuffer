@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#define IMG 18
+#define IMG 16
 #define KERNEL 3
 #define REPL 1
 
@@ -73,23 +73,22 @@ void generate_windows()
 	}
 }
 
-int main()
+/*int main()
 {
 	fill_image();
         generate_windows();
-}
-//int main()
-//{
-	//fill_image();
-	//generate_windows();
-	/*for(int i=0;i<16; i++) 
+}*/
+int main()
+{
+	fill_image();
+	for(int i=0;i<16; i++) 
 	{
 		int a = initial_load();
 		int b = initial_load();
-		int c = initial_load();
-		int d = initial_load();
+		//int c = initial_load();
+		//int d = initial_load();
 		//printf("[%d %d %d %d] = [%d %d %d %d]\n", a, b, c, d, image[0][i], image[1][i], image[2][i], image[3][i]);
 	}
 	for(int i=0;i<64; i++)
-		lateral_load(); */
-//}
+		lateral_load(); 
+}

@@ -16,7 +16,7 @@ import BRAMFIFO::*;
 
 interface Coalesce;
         method Action put(Vector#(VLEN, DataType) datas);
-	method Action configure(UInt#(6) ker);
+	method Action configure(UInt#(6) ker, UInt#(12) wx);
         method ActionValue#(Vector#(VLEN, Vector#(VLEN, DataType))) get;
 endinterface
 
@@ -45,9 +45,10 @@ for(int i=0 ;i< VLEN; i = i + 1)
 		window2[i][j] <- mkReg(0);
 end
 
-Reg#(UInt#(10)) cx           <- mkReg(0);
+Reg#(UInt#(12)) cx           <- mkReg(0);
 Reg#(UInt#(6)) kernel 	     <- mkReg(0);
 Reg#(UInt#(6)) count 	     <- mkReg(0);
+Reg#(UInt#(12)) width 	     <- mkReg(0);
 
 FIFOF#(Bit#(1)) p0 <- mkPipelineFIFOF;
 FIFOF#(Bit#(1)) p1 <- mkPipelineFIFOF;
@@ -72,7 +73,7 @@ FIFOF#(Vector#(VLEN,DataType)) inQ <- mkFIFOF;
 	
 	rule _activate2;
 		p0.deq;
-		if (cx == 18-1) begin
+		if (cx == width-1) begin
                         cx <= 0;
 			count <= 0;
 		end
@@ -114,8 +115,9 @@ FIFOF#(Vector#(VLEN,DataType)) inQ <- mkFIFOF;
 		return x;
 	endmethod
 	
-	method Action configure(UInt#(6) ker);
+	method Action configure(UInt#(6) ker, UInt#(12) wx);
 		kernel <= ker;
+		width  <= wx;
 	endmethod	
 endmodule
 endpackage

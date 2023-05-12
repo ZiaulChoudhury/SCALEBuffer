@@ -12,11 +12,11 @@ import "BDPI" function  ActionValue#(Int#(32)) initial_load();
 import "BDPI" function  ActionValue#(Int#(32)) lateral_load();
 
 #define REPL 1
-#define IMG  18
+#define IMG  16
 #define KERNL 3
 
 // REPL + KERNEL - 1
-#define REPLPADD 3
+#define REPLPADD 5
 
 (*synthesize*)
 module mkFlowTest();
@@ -40,13 +40,12 @@ module mkFlowTest();
 
 	rule intialLoad (init == True && inL == True);
 		Vector#(REPLPADD,DataType) d = replicate(0);
+		for(int i=0; i<KERNL-1; i = i + 1) 
+		begin
 			Int#(32) v0 <- initial_load();
 			UInt#(8) v1 = unpack(truncate(pack(v0)));
-			Int#(32) v2 <- initial_load();
-			UInt#(8) v3 = unpack(truncate(pack(v2)));
-			//$display(" ----> %d %d ", v0,v2);
-			d[0] = v1;
-			d[1] = v3;
+			d[i] = v1;
+		end
 				
 		if (value == IMG) begin
 			inL   <= False;
@@ -59,7 +58,7 @@ module mkFlowTest();
 
 	rule lateralLoad (init == True && inL == False);
 		Vector#(REPLPADD,DataType) d = replicate(0);
-		for(UInt#(8) i=0 ;i< REPLPADD-(KERNL-1);i=i+1) begin
+		for(UInt#(8) i=0 ;i< REPL;i=i+1) begin
 			Int#(32) v0 <- lateral_load();
                         UInt#(8) v1 = unpack(truncate(pack(v0)));
 			d[i+(KERNL-1)] = v1;
@@ -68,7 +67,7 @@ module mkFlowTest();
 	endrule
 	
 
-	rule receive;
+	rule receive3 (KERNL == 3);
 		let d <- px.get;
 
 		Vector#(3,Vector#(3,DataType)) matrix = newVector;
@@ -96,6 +95,66 @@ module mkFlowTest();
 		if (count == (IMG-2)*(IMG-2)-1)
 			$finish(0);
 	endrule
+
+
+ 	rule receive5 (KERNL == 5);
+                let d <- px.get;
+
+                Vector#(5,Vector#(5,DataType)) matrix = newVector;
+
+                for(int i=0;i<5;i=i+1)
+                        for(int j=0;j<5;j=j+1)
+                                matrix[i][j] = d[i][j];
+
+                matrix[0][0] = d[4][4];
+                matrix[4][4] = d[0][0];
+		matrix[1][1] = d[3][3];
+                matrix[3][3] = d[1][1];
+		
+
+		matrix[1][0] = d[4][3];
+                matrix[4][3] = d[1][0];
+		matrix[2][1] = d[3][2];
+                matrix[3][2] = d[2][1];
+
+
+		
+		matrix[2][0] = d[4][2];
+		matrix[4][2] = d[2][0];
+		
+		
+		matrix[3][0] = d[4][1];
+		matrix[4][1] = d[3][0];
+
+
+		matrix[0][1] = d[3][4];
+                matrix[3][4] = d[0][1];
+                matrix[1][2] = d[2][3];
+                matrix[2][3] = d[1][2];
+
+		
+		matrix[0][2] = d[2][4];
+                matrix[2][4] = d[0][2];
+
+
+                matrix[0][3] = d[1][4];
+                matrix[1][4] = d[0][3];
+
+
+				
+
+                for(int i=0;i<5;i=i+1) begin
+                        for(int j=0;j<5;j=j+1)
+                                $write(" %d", matrix[i][j]);
+                $display();
+                end
+
+                $display("------------------------");
+
+                count <= count + 1;
+                if (count == (IMG-4)*(IMG-4)-1) 
+                        $finish(0);
+        endrule
 
 endmodule
 endpackage
