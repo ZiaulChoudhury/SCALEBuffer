@@ -2,7 +2,7 @@
 
 #define IMG 16
 #define KERNEL 3
-#define REPL 1
+#define REPL 2
 
 int row_counter;
 int col_counter;
